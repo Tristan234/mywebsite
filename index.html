@@ -1,16 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Clicker</title>
+    <style>
+        body {
+            background: repeating-linear-gradient(
+                45deg,
+                lightblue,
+                lightblue 10px,
+                darkblue 10px,
+                darkblue 20px
+            );
+            text-align: center;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
 
-<html>
-    <h1>
-        Hey, I'm GodzGamer
-    </h1>
-    <body>
-        <h2>About me</h2>
-        <p>
-            I am a tech geek and gamer who makes vidoes sometimes.
-        </p>
-        <h2>What I'm working on</h2>
-        <p>
-            I'm working on random tech stuff.
-        </p>
-    </body>
+        #game-container {
+            width: 600px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #game-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #cookie-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #cookie {
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        #cookie:active {
+            transform: scale(0.9);
+        }
+
+        #upgrades {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            max-height: 200px; /* Set the maximum height for scroll */
+        }
+
+        .upgrade-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px; /* Add margin between buttons */
+        }
+
+        .upgrade-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Cookie Clicker</h1>
+        <div id="counters">
+            <h2>Cookies: <span id="cookie-counter">0</span></h2>
+            <h3>CPC: <span id="cpc-counter">1</span></h3>
+            <h3>CPS: <span id="cps-counter">0</span></h3>
+        </div>
+        <div id="game-content">
+            <div id="cookie-container">
+                <img id="cookie" src="https://cdn.icon-icons.com/icons2/1719/PNG/512/3856385-christmas-cookie-dessert-sweet_112770.png" alt="Cookie">
+            </div>
+            <div id="upgrades">
+                <button class="upgrade-button" id="upgrade-cps-button">+1 CPS (Cost: <span id="cps-upgrade-cost">100</span> cookies)</button>
+                <button class="upgrade-button" id="upgrade-button">+1 CPC (Cost: <span id="upgrade-cost">10</span> cookies)</button>
+                <button class="upgrade-button" id="upgrade-cps-button">+1 CPS (Cost: <span id="cps-upgrade-cost">100</span> cookies)</button>
+                <button class="upgrade-button" id="upgrade-bakery-button">Bakery (+20 cps) (Cost: <span id="bakery-upgrade-cost">1,000</span> cookies)</button>
+                <button class="upgrade-button" id="upgrade-gramouse-button">Grandma Mouse (+50 cpc) (Cost: <span id="gramouse-upgrade-cost">2,000</span> cookies)</button>
+                <button class="upgrade-button" id="upgrade-factory-button">Factory (+100 cps) (Cost: <span id="factory-upgrade-cost">10,000</span> cookies)</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let cookieCounter = 0;
+        let cpc = 1;
+        let cps = 0;
+        let upgradeCost = 10;
+        let cpsUpgradeCost = 100;
+        let bakeryUpgradeCost = 1000;
+        let factoryUpgradeCost = 10000;
+        let gramouseUpgradeCost = 2000;
+
+        const cookieElement = document.getElementById('cookie');
+        const cookieCounterElement = document.getElementById('cookie-counter');
+        const cpcCounterElement = document.getElementById('cpc-counter');
+        const cpsCounterElement = document.getElementById('cps-counter');
+        const upgradeButtonElement = document.getElementById('upgrade-button');
+        const upgradeCostElement = document.getElementById('upgrade-cost');
+        const cpsUpgradeButtonElement = document.getElementById('upgrade-cps-button');
+        const cpsUpgradeCostElement = document.getElementById('cps-upgrade-cost');
+        const bakeryUpgradeButtonElement = document.getElementById('upgrade-bakery-button');
+        const gramouseUpgradeButtonElement = document.getElementById('upgrade-gramouse-button');
+        const factoryUpgradeButtonElement = document.getElementById('upgrade-factory-button'); // Added this line
+        const bakeryUpgradeCostElement = document.getElementById('bakery-upgrade-cost');
+        const gramouseUpgradeCostElement = document.getElementById('gramouse-upgrade-cost');
+        const factoryUpgradeCostElement = document.getElementById('factory-upgrade-cost'); // Changed this line
+
+        // Update the counters
+        function updateCounters() {
+            cookieCounterElement.textContent = cookieCounter;
+            cpcCounterElement.textContent = cpc;
+            cpsCounterElement.textContent = cps;
+            upgradeCostElement.textContent = upgradeCost;
+            cpsUpgradeCostElement.textContent = cpsUpgradeCost;
+            bakeryUpgradeCostElement.textContent = bakeryUpgradeCost;
+            gramouseUpgradeCostElement.textContent = gramouseUpgradeCost;
+            factoryUpgradeCostElement.textContent = factoryUpgradeCost;
+        }
+
+        // Handle cookie click
+        cookieElement.addEventListener('click', () => {
+            cookieCounter += cpc;
+            updateCounters();
+        });
+
+        // Handle upgrade button click for +1 CPC
+        upgradeButtonElement.addEventListener('click', () => {
+            if (cookieCounter >= upgradeCost) {
+                cookieCounter -= upgradeCost;
+                cpc += 1;
+                upgradeCost = Math.floor(upgradeCost * 2);
+                updateCounters();
+            }
+        });
+
+        // Handle upgrade button click for +1 CPS
+        cpsUpgradeButtonElement.addEventListener('click', () => {
+            if (cookieCounter >= cpsUpgradeCost) {
+                cookieCounter -= cpsUpgradeCost;
+                cps += 1;
+                cpsUpgradeCost = Math.floor(cpsUpgradeCost * 2);
+                updateCounters();
+            }
+        });
+
+        // Handle upgrade button click for Bakery
+        bakeryUpgradeButtonElement.addEventListener('click', () => {
+            if (cookieCounter >= bakeryUpgradeCost) {
+                cookieCounter -= bakeryUpgradeCost;
+                cps += 20;
+                bakeryUpgradeCost = Math.floor(bakeryUpgradeCost * 5);
+                updateCounters();
+            }
+        });
+
+        // Handle upgrade button click for Grandma Mouse
+        gramouseUpgradeButtonElement.addEventListener('click', () => {
+            if (cookieCounter >= gramouseUpgradeCost) {
+                cookieCounter -= gramouseUpgradeCost;
+                cpc += 50;
+                gramouseUpgradeCost = Math.floor(gramouseUpgradeCost * 3);
+                updateCounters();
+            }
+        });
+
+        // Handle upgrade button click for Factory
+        factoryUpgradeButtonElement.addEventListener('click', () => {
+            if (cookieCounter >= factoryUpgradeCost) {
+                cookieCounter -= factoryUpgradeCost;
+                cps += 100;
+                factoryUpgradeCost = Math.floor(factoryUpgradeCost * 3);
+                updateCounters();
+            }
+        });
+
+        // Update CPS every second
+        setInterval(() => {
+            cookieCounter += cps;
+            updateCounters();
+        }, 1000);
+
+        // Initial update
+        updateCounters();
+    </script>
+</body>
 </html>
